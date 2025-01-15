@@ -6,17 +6,18 @@ import Ethereum from '@/assets/icons/ethereum.png'
 import { DepositABI } from '@/app/abis/deposit.abi'
 import { BigNumber } from 'bignumber.js'
 import { hexlify } from 'ethers'
+import { erc20Abi } from 'viem'
 
 export default function Deposit() {
   const amount = new BigNumber('100').times(BigNumber(10).pow(6)).toString()
-  const contractAddress = '0xBC5EfC43206db9077a0dfa5c5860fB6949bE607e'
+  const contractAddress = '0xf71a6213d359D4939D201c5d33fC2eFaaae3F599'
   const contractChainId = 421614
   const { Add } = useNotifications()
   const { chains, switchChain } = useSwitchChain()
   const { address, chainId } = useAccount()
   const { writeContract } = useWriteContract()
   // from const [hdKey, setHdKey] = useState<PrivateInformation>()
-  const pubKey = '8fbfa4297919b772d61c70f400581a3325d664f9'
+  const pubKey = '0x8fbfa4297919b772d61c70f400581a3325d664f9'
 
   const handleAction = () => {
     console.log('deposit')
@@ -33,12 +34,25 @@ export default function Deposit() {
       console.log('depositing', pubKey, amount)
       writeContract(
         {
-          abi: DepositABI,
-          address: contractAddress,
-          functionName: 'deposit',
-          args: [[0, pubKey, BigInt(amount)]],
+          abi: erc20Abi,
+          address: '0x850E1C191e29459944072d73D8B47Bc51e0046DB',
+          functionName: 'approve',
+          args: [contractAddress, BigInt(amount)],
         },
-        { onSuccess: () => console.log('deposited') }
+        {
+          onSuccess: () => {
+            console.log([0, pubKey, BigInt(amount)])
+            writeContract(
+              {
+                abi: DepositABI,
+                address: contractAddress,
+                functionName: 'deposit',
+                args: [[0, pubKey, BigInt(amount)]],
+              },
+              { onSuccess: () => console.log('deposited') }
+            )
+          },
+        }
       )
     }
   }

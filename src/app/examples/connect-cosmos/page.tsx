@@ -54,7 +54,7 @@ export default function ConnectCosmos() {
           console.log(x)
           setCosmos(x.wallet.address || '')
           const data = RocketUtil.getBech32Address(x.wallet.address || '')
-          const bech32Address = Buffer.from(Uint8Array.from(data.split(','))).toString('hex')
+          const bech32Address = `0x${Buffer.from(Uint8Array.from(data.split(','))).toString('hex')}`
           console.log(bech32Address)
           setHdKey({ mnemonic: x.mnemonic, privateKey: x.privateKey, publicKey: x.publicKey, bech32Address })
           // signAuthMessage()
